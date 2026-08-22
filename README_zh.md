@@ -2,6 +2,8 @@
 
 **社区首个可在 Windows + Python 3.13 + torch 2.13 (cu130) 上直接安装使用的 sageattn3 wheel**，以及配套的 MiniMax-H3 Director v3（sageattn3 FP4 加速）工作流。
 
+![sageattn3 v3 预览](assets/preview.svg)
+
 ## 亮点
 
 - ✅ **cp313 / win_amd64 wheel**，torch 2.13.0+cu130 直接 `pip install` 可用（无需自己编译）
@@ -23,7 +25,12 @@ sageattn3-v3-release/
 ├── README.md                        # 英文版（概述 / 安装 / 发布说明）
 ├── README_zh.md                     # 本文件（中文）
 ├── BUILD.md                         # 从源码编译 wheel 的完整指南
+├── BUILD_zh.md                      # 编译指南（中文）
 ├── LICENSE                          # Apache-2.0（与原项目一致）
+├── requirements.txt                 # 运行时依赖钉版本（torch 2.13+cu130、sageattn3 1.0.0、comfyui-frontend-package 1.48.7 等）
+├── .gitignore                       # 忽略 dist/（wheel 作为 Release asset 发布）
+├── assets/
+│   └── preview.svg                  # README 顶部横幅图
 ├── dist/
 │   └── sageattn3-1.0.0-cp313-cp313-win_amd64.whl   # 成品 wheel（直接 pip 安装）
 ├── patches/
@@ -34,9 +41,10 @@ sageattn3-v3-release/
 │   ├── setup.py                     # 编译配置（全 C++20，关键）
 │   ├── build_env.py                 # 编译环境注入脚本（MSVC/SDK/CUDA 环境变量）
 │   ├── make_v3_workflow.py          # v3 工作流转换（单文件版）
-│   └── make_v3_workflows.py         # v3 工作流批量转换（8 个示例全转）
+│   ├── make_v3_workflows.py         # v3 工作流批量转换（8 个示例全转）
+│   └── install.ps1                  # 一键安装脚本（ComfyUI 便携版）
 └── workflows_v3/
-    ├── minimax_h3_director_加速版.json
+    ├── minimax_h3_director_加速版_v3.json
     ├── minimax_h3_director_t2v_v3.json          # 文生视频
     ├── minimax_h3_director_external_groups_i2v_v3.json  # 图生视频
     ├── minimax_h3_director_r2v_v3.json          # 参考图→视频
@@ -72,6 +80,8 @@ D:\AI\ComfyUI\xxx\python_embeded\python.exe -c "import sageattn3; print('OK')"
 :: 3) 把 workflows_v3\ 里的工作流复制到
 ::    <ComfyUI>/user/default/workflows/  然后打开 ComfyUI 直接使用
 ```
+
+> **依赖说明：** 仓库附带钉版本的 `requirements.txt` 供参考。注意 `torch==2.13.0+cu130`、`sageattention==2.2.0+cu130...` 与 `sageattn3==1.0.0` **不在 PyPI 上**（CUDA 13.0 本地 / 自定义构建）。请先从 `dist/` 安装 wheel，再对剩余纯 PyPI 包执行 `python -m pip install -r requirements.txt`；若只装 wheel 也可直接跳过 `requirements.txt`。
 
 v3 工作流原理：用 **KJNodes 的 `PathchSageAttentionKJ`**（参数 `sageattn3`）替换 H3 原生的 `MiniMaxH3MemoryEfficientSageAttentionPatch`，使 UNET 的 attention 走 sageattn3 的 FP4 内核：
 
@@ -120,5 +130,6 @@ Apache-2.0 — 继承自 [mengqin/SageAttention](https://github.com/mengqin/Sage
 
 - [mengqin/SageAttention](https://github.com/mengqin/SageAttention)（sageattention3_blackwell 源码与 release）
 - [ComfyUI-KJNodes](https://github.com/kijai/ComfyUI-KJNodes)（`PathchSageAttentionKJ` 节点）
+- [AIMixer/ComfyUI_MiniMaxH3_Director](https://github.com/AIMixer/ComfyUI_MiniMaxH3_Director) — 8 个 v3 工作流派生自该节点自带的 `example_workflows/`（该节点基于 ComfyUI 官方 MiniMax H3 支持，PR #15224 / #15228）
 - [NVIDIA/cutlass](https://github.com/NVIDIA/cutlass)（v4.0.0）
 - [SageAttention](https://github.com/thu-ml/SageAttention) 团队

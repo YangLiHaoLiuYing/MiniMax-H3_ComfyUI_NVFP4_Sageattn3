@@ -37,7 +37,7 @@ Remove one line from `sageattn3/blackwell/api.cu` (see `patches/api.cu.patch`):
 > **Why**: `torch/nn/functional.h` pulls in torch C++ API headers that deep-instantiate CUTLASS CuTe templates, triggering MSVC `C3545` under C++20. api.cu only uses `at::Tensor` / `torch::IntArrayRef`, so removing it has zero functional impact.
 
 ```bat
-:: Apply the patch (from the repo root; works with git apply or patch -p1)
+:: Apply the patch (from the **sageattn3** source repo root; works with git apply or patch -p1)
 git apply patches\api.cu.patch
 :: …or simply copy the pre-patched file from this repo
 copy patches\api.cu sageattn3\blackwell\api.cu
@@ -123,5 +123,7 @@ Once the wheel works, swap H3's `MiniMaxH3MemoryEfficientSageAttentionPatch` for
 ```bat
 python tools\make_v3_workflows.py <Director example_workflows dir> <output dir>
 ```
+
+> The `<Director example_workflows dir>` is `example_workflows/` shipped inside [AIMixer/ComfyUI_MiniMaxH3_Director](https://github.com/AIMixer/ComfyUI_MiniMaxH3_Director) (the node is based on ComfyUI official MiniMax H3 support, PR #15224 / #15228). Our 8 v3 workflows are derived from those bundled examples.
 
 Rules: remove every patch node on the chain (H3 patch / old KJ), create a `PathchSageAttentionKJ` node (`widgets_values=["sageattn3"]`), and rewire `UNET → KJ → Director`. 8 ready-made v3 workflows are in `workflows_v3/`.

@@ -35,7 +35,7 @@ cd SageAttention/sageattention3_blackwell
 > **为什么**：`torch/nn/functional.h` 引入的 torch C++ API 头文件会深度实例化 CUTLASS CuTe 模板，在 C++20 下触发 MSVC `C3545` 编译错误。api.cu 只用 `at::Tensor`/`torch::IntArrayRef`，删掉完全不影响功能。
 
 ```bat
-:: 应用补丁（在仓库根目录执行，git apply 或 patch -p1 均可）
+:: 应用补丁（在 **sageattn3** 源码仓库根目录执行，git apply 或 patch -p1 均可）
 git apply patches\api.cu.patch
 :: 或直接复制本仓库修改好的文件
 copy patches\api.cu sageattn3\blackwell\api.cu
@@ -121,5 +121,7 @@ print(out.shape, torch.isfinite(out).all())  # torch.Size([2,16,512,128]) True
 ```bat
 python tools\make_v3_workflows.py <Director 的 example_workflows 目录> <输出目录>
 ```
+
+> `<Director 的 example_workflows 目录>` 即 [AIMixer/ComfyUI_MiniMaxH3_Director](https://github.com/AIMixer/ComfyUI_MiniMaxH3_Director) 节点自带的 `example_workflows/`（该节点基于 ComfyUI 官方 MiniMax H3 支持，PR #15224 / #15228）。我们的 8 个 v3 工作流即派生自这些内置示例。
 
 转换规则：删除链路上所有 patch 节点（H3 patch / 旧 KJ），新建 `PathchSageAttentionKJ`（`widgets_values=["sageattn3"]`），重连 `UNET → KJ → Director`。8 个成品工作流见 `workflows_v3/`。

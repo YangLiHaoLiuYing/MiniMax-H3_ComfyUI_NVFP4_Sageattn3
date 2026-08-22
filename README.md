@@ -2,6 +2,8 @@
 
 **The first community-built sageattn3 wheel that works directly on Windows + Python 3.13 + torch 2.13 (cu130)**, plus ready-made MiniMax-H3 Director v3 workflows with sageattn3 FP4-accelerated attention.
 
+![sageattn3 v3 preview](assets/preview.svg)
+
 ## Highlights
 
 - ✅ **cp313 / win_amd64 wheel** — drop-in installable on torch 2.13.0+cu130 (`pip install`, no compilation needed)
@@ -25,6 +27,10 @@ sageattn3-v3-release/
 ├── BUILD.md                         # Full build guide (EN)
 ├── BUILD_zh.md                      # Build guide (中文)
 ├── LICENSE                          # Apache-2.0 (same as upstream)
+├── requirements.txt                 # Pinned runtime deps (torch 2.13+cu130, sageattn3 1.0.0, comfyui-frontend-package 1.48.7, ...)
+├── .gitignore                       # Excludes dist/ (wheel is published as a Release asset)
+├── assets/
+│   └── preview.svg                  # Banner shown at top of README
 ├── dist/
 │   └── sageattn3-1.0.0-cp313-cp313-win_amd64.whl   # Ready-built wheel (pip install)
 ├── patches/
@@ -35,9 +41,10 @@ sageattn3-v3-release/
 │   ├── setup.py                     # Build config (C++20 — critical)
 │   ├── build_env.py                 # Env injection script (MSVC/SDK/CUDA vars)
 │   ├── make_v3_workflow.py          # Single-workflow v3 converter
-│   └── make_v3_workflows.py         # Batch v3 converter (all 8 examples)
+│   ├── make_v3_workflows.py         # Batch v3 converter (all 8 examples)
+│   └── install.ps1                  # One-click wheel installer for ComfyUI portable
 └── workflows_v3/
-    ├── minimax_h3_director_加速版.json              # All-in-one workflow
+    ├── minimax_h3_director_加速版_v3.json          # All-in-one workflow
     ├── minimax_h3_director_t2v_v3.json              # Text-to-video
     ├── minimax_h3_director_external_groups_i2v_v3.json  # Image-to-video (groups)
     ├── minimax_h3_director_r2v_v3.json              # Reference-image-to-video
@@ -73,6 +80,8 @@ D:\AI\ComfyUI\xxx\python_embeded\python.exe -c "import sageattn3; print('OK')"
 :: 3) Copy workflows from workflows_v3\ into
 ::    <ComfyUI>/user/default/workflows/  then open ComfyUI and use them
 ```
+
+> **Dependencies:** A pinned `requirements.txt` is included for reference. Note that `torch==2.13.0+cu130`, `sageattention==2.2.0+cu130...` and `sageattn3==1.0.0` are **not on PyPI** (local CUDA 13.0 / custom builds). Install the wheel from `dist/` first, then `python -m pip install -r requirements.txt` only for the remaining pure-PyPI packages — or skip `requirements.txt` entirely if you only need the wheel.
 
 How the v3 workflows work: **KJNodes `PathchSageAttentionKJ`** (with `sageattn3`) replaces H3's native `MiniMaxH3MemoryEfficientSageAttentionPatch`, routing the UNET attention through sageattn3's FP4 kernel:
 
@@ -121,5 +130,6 @@ This is a community prebuilt wheel for convenience, not an official NVIDIA / Sag
 
 - [mengqin/SageAttention](https://github.com/mengqin/SageAttention) (sageattention3_blackwell source & releases)
 - [ComfyUI-KJNodes](https://github.com/kijai/ComfyUI-KJNodes) (`PathchSageAttentionKJ` node)
+- [AIMixer/ComfyUI_MiniMaxH3_Director](https://github.com/AIMixer/ComfyUI_MiniMaxH3_Director) — the 8 v3 workflows are derived from its bundled `example_workflows/` (the node is based on ComfyUI official MiniMax H3 support, PR #15224 / #15228)
 - [NVIDIA/cutlass](https://github.com/NVIDIA/cutlass) (v4.0.0)
 - The [SageAttention](https://github.com/thu-ml/SageAttention) team
