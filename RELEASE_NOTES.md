@@ -56,6 +56,24 @@ python -c "import sageattn3; from sageattn3.api import sdpa; print('OK')"
 - **sm120 (RTX 50 series) only**; RTX 40 series not supported
 - Missing `ComfyUI/requirements.txt` makes `/system_stats` return 500 (MiniMax packaging quirk; does not affect nodes or workflow execution)
 
+## 📥 Models (not included)
+
+Model weights are **not** bundled. Download the 5 required MiniMax-H3 models and place them under `ComfyUI/models/`:
+
+- `minimax_h3_fl2va_pruned_int8_convrot.safetensors` → `models/checkpoints/`
+- `minimax_h3_ref2va_pruned_int8_convrot.safetensors` → `models/checkpoints/`
+- `qwen3vl_32b_heretic_minimax_h3_nvfp4.safetensors` → `models/clip/`
+- `minimax_h3_audio_vae_fp32.safetensors` → `models/vae/`
+- `minimax_h3_video_vae_fp16.safetensors` → `models/vae/`
+
+## 📄 License
+
+Apache-2.0 — inherited from [mengqin/SageAttention](https://github.com/mengqin/SageAttention). See `LICENSE`.
+
+## ⚠️ Disclaimer
+
+This is a community prebuilt wheel for convenience, not an official NVIDIA / SageAttention release. Use at your own risk; if building from source, verify against the patch in `patches/`.
+
 ## 🙏 Acknowledgements
 
 - [mengqin/SageAttention](https://github.com/mengqin/SageAttention) (sageattention3_blackwell source & releases)

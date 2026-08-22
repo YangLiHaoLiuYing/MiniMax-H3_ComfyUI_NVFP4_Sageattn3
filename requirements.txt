@@ -1,0 +1,27 @@
+# ============================================================
+# sageattn3 (Windows / Python 3.13 / RTX 50 Blackwell) — 精简运行时依赖
+# 在 ComfyUI 环境中运行 sageattn3 所需的核心依赖钉版本（精简版）。
+# 完整环境清单（112~114 个包）见各 MiniMax-H3_* 包内的 requirements.txt。
+#
+# 说明：
+#   - torch / torchvision / torchaudio 带 +cu130 本地版本标签，
+#     需从 PyTorch CUDA 13.0 索引或随包 wheel 安装，而非默认 PyPI。
+#   - sageattn3==1.0.0 不在 PyPI，需用本仓库 dist/ 下的本地 wheel 安装：
+#       python_embeded\python.exe -m pip install dist\sageattn3-1.0.0-cp313-cp313-win_amd64.whl
+#   - Python 3.13（wheel 为 cp313 构建，非 pip 安装项）。
+# ============================================================
+
+# 核心 ML 栈（CUDA 13.0 构建）
+torch==2.13.0+cu130
+torchvision==0.28.0+cu130
+torchaudio==2.11.0+cu130
+
+# sageattn3 及其相关注意力后端
+sageattn3==1.0.0
+sageattention==2.2.0+cu130torch2.10.0andhigher.post6
+
+# Triton（sageattn3 部分执行路径依赖）
+triton-windows==3.6.0.post26
+
+# ComfyUI Web 前端（钉死版本）
+comfyui_frontend_package==1.48.7

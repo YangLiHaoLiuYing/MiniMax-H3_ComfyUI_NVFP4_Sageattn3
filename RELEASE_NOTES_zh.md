@@ -53,6 +53,24 @@ python -c "import sageattn3; from sageattn3.api import sdpa; print('OK')"
 - 仅支持 **sm120（RTX 50 系）**；RTX 40 系不支持
 - `ComfyUI/requirements.txt` 缺失会导致 `/system_stats` 500（MiniMax 打包环境固有，不影响使用）
 
+## 📥 模型权重（不包含）
+
+本发布**不含**模型权重。请自行下载 5 个必需的 MiniMax-H3 模型并放入 `ComfyUI/models/` 对应子目录：
+
+- `minimax_h3_fl2va_pruned_int8_convrot.safetensors` → `models/checkpoints/`
+- `minimax_h3_ref2va_pruned_int8_convrot.safetensors` → `models/checkpoints/`
+- `qwen3vl_32b_heretic_minimax_h3_nvfp4.safetensors` → `models/clip/`
+- `minimax_h3_audio_vae_fp32.safetensors` → `models/vae/`
+- `minimax_h3_video_vae_fp16.safetensors` → `models/vae/`
+
+## 📄 许可证
+
+Apache-2.0 — 继承自 [mengqin/SageAttention](https://github.com/mengqin/SageAttention)。见 `LICENSE`。
+
+## ⚠️ 免责声明
+
+本发布为社区预编译 wheel，仅供方便使用，非 NVIDIA / SageAttention 官方发布。风险自负；若自行构建，请对照 `patches/` 中的源码补丁进行验证。
+
 ## 🙏 致谢
 
 - [mengqin/SageAttention](https://github.com/mengqin/SageAttention)（sageattention3_blackwell 源码）
