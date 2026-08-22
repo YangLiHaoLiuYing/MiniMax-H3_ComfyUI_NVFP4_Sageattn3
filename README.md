@@ -2,10 +2,15 @@
 
 **The first community-built sageattn3 wheel that works directly on Windows + Python 3.13 + torch 2.13 (cu130)**, plus ready-made MiniMax-H3 Director v3 workflows with sageattn3 FP4-accelerated attention.
 
-- Target hardware: **RTX 50 series (sm120, Blackwell)** — tested on RTX 5080
-- Kernel: sageattn3 FP4-quantized Flash Attention (`sageattn3_blackwell`)
-- Accuracy: **cosine similarity 1.0 / MSE = 0** vs standard attention
-- Speed: **16.7 TFLOP/s** on RTX 5080 (0.52 ms/call, B=2,H=16,N=1024,D=128)
+## Highlights
+
+- ✅ **cp313 / win_amd64 wheel** — drop-in installable on torch 2.13.0+cu130 (`pip install`, no compilation needed)
+- ✅ Official and mengqin Windows wheels are built against torch 2.9 — **ABI-incompatible with torch 2.13** ("The specified procedure could not be found"). This repo fills that gap.
+- ✅ Tested on RTX 5080 (sm120): **16.7 TFLOP/s**, accuracy identical to standard attention (**cosine similarity 1.0, MSE = 0**)
+- ✅ Includes **8 MiniMax-H3 v3 accelerated workflows** (UNET attention routed through the sageattn3 FP4 kernel)
+- ✅ Full **build guide** (BUILD.md, EN/中文) so anyone can reproduce
+
+**Target hardware:** RTX 50 series (sm120, Blackwell) — tested on RTX 5080 · **Kernel:** sageattn3 FP4-quantized Flash Attention (`sageattn3_blackwell`)
 
 > 中文版见 [README_zh.md](README_zh.md) · 编译指南 [BUILD.md](BUILD.md) / [BUILD_zh.md](BUILD_zh.md)
 
@@ -15,8 +20,8 @@
 
 ```
 sageattn3-v3-release/
-├── README.md                        # This file (EN)
-├── README_zh.md                     # README (中文)
+├── README.md                        # This file (EN) — overview, install, release notes
+├── README_zh.md                     # Same content (中文)
 ├── BUILD.md                         # Full build guide (EN)
 ├── BUILD_zh.md                      # Build guide (中文)
 ├── LICENSE                          # Apache-2.0 (same as upstream)
@@ -88,21 +93,29 @@ The official sageattn3 and mengqin releases ship Linux wheels only; mengqin's Wi
 | `LNK1104: python313.lib` | ComfyUI python_embeded is a slim build without import libs | Copy `python313.lib` from any Python 3.13 install into `python_embeded/libs/` |
 | `Python.h` missing | python_embeded has no dev headers | Copy the full Python 3.13 `include/` into `python_embeded/include/` |
 
-## Test Results (RTX 5080)
+## Benchmarks (RTX 5080 / torch 2.13.0+cu130 / CUDA 13.1 build)
 
-```
-torch: 2.13.0+cu130 | CUDA: 13.1 (build) | GPU: RTX 5080
-sdpa output: torch.Size([2, 16, 512, 128]) fp16
-cosine similarity vs standard attention: 1.0000
-MSE: 0.000000
-speed: 0.52 ms/call = 16.7 TFLOP/s (B=2,H=16,N=1024,D=128)
-```
+| Metric | Result |
+|---|---|
+| Output shape/dtype | `[2,16,512,128]` fp16 ✅ |
+| Cosine similarity vs standard attention | **1.0000** |
+| MSE | **0.000000** |
+| Latency | **0.52 ms/call** (B=2,H=16,N=1024,D=128) |
+| Throughput | **16.7 TFLOP/s** |
 
 ## Known Limitations
 
 - **sm120 (RTX 50 series) only**; RTX 40 series (sm89) is not supported
 - Missing `ComfyUI/requirements.txt` makes `/system_stats` return 500 (a MiniMax packaging quirk; does not affect nodes or workflow execution)
 - Full generation should be verified by running inside ComfyUI (requires loading the MiniMax H3 model)
+
+## License
+
+Apache-2.0 — inherited from [mengqin/SageAttention](https://github.com/mengqin/SageAttention). See `LICENSE`.
+
+## Disclaimer
+
+This is a community prebuilt wheel for convenience, not an official NVIDIA / SageAttention release. Use at your own risk; if building from source, verify against the patch in `patches/`.
 
 ## Acknowledgements
 

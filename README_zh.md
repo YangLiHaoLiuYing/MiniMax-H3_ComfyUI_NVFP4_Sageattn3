@@ -2,10 +2,17 @@
 
 **社区首个可在 Windows + Python 3.13 + torch 2.13 (cu130) 上直接安装使用的 sageattn3 wheel**，以及配套的 MiniMax-H3 Director v3（sageattn3 FP4 加速）工作流。
 
-- 硬件目标：**RTX 50 系（sm120，Blackwell）**，实测 RTX 5080
-- 内核：sageattn3 的 FP4 量化 Flash Attention（`sageattn3_blackwell`）
-- 精度实测：与标准 attention **余弦相似度 1.0 / MSE = 0**
-- 速度实测：RTX 5080 上 **16.7 TFLOP/s**（0.52 ms/次，B=2,H=16,N=1024,D=128）
+## 亮点
+
+- ✅ **cp313 / win_amd64 wheel**，torch 2.13.0+cu130 直接 `pip install` 可用（无需自己编译）
+- ✅ 官方及 mengqin 的 Windows wheel 均为 torch 2.9 构建，与 torch 2.13 **ABI 不兼容**（报"找不到指定的程序"）——本仓库补齐了这个空白
+- ✅ RTX 5080（sm120）实测：**16.7 TFLOP/s**，精度与标准 attention **完全一致**（余弦相似度 1.0，MSE = 0）
+- ✅ 附 8 个 MiniMax-H3 **v3 加速工作流**（UNET attention 走 sageattn3 FP4 内核）
+- ✅ 附**完整编译指南**（BUILD.md），任何人可复现
+
+**硬件目标：** RTX 50 系（sm120，Blackwell），实测 RTX 5080 · **内核：** sageattn3 的 FP4 量化 Flash Attention（`sageattn3_blackwell`）
+
+> 编译指南 [BUILD.md](BUILD.md) / [BUILD_zh.md](BUILD_zh.md)
 
 ---
 
@@ -13,7 +20,8 @@
 
 ```
 sageattn3-v3-release/
-├── README.md                        # 本文件
+├── README.md                        # 英文版（概述 / 安装 / 发布说明）
+├── README_zh.md                     # 本文件（中文）
 ├── BUILD.md                         # 从源码编译 wheel 的完整指南
 ├── LICENSE                          # Apache-2.0（与原项目一致）
 ├── dist/
@@ -84,21 +92,29 @@ sageattn3 官方与 mengqin 的 release 只提供 Linux wheel；mengqin 的 Wind
 | `LNK1104: python313.lib` | ComfyUI python_embeded 精简版缺导入库 | 从任意 Python 3.13 安装目录复制 `python313.lib` 到 `python_embeded/libs/` |
 | `Python.h` 缺失 | python_embeded 精简版无开发头文件 | 复制完整 Python 3.13 的 `include/` 到 `python_embeded/include/` |
 
-## 测试结果（RTX 5080）
+## 实测数据（RTX 5080 / torch 2.13.0+cu130 / CUDA 13.1 编译）
 
-```
-torch: 2.13.0+cu130 | CUDA: 13.1 (编译) | GPU: RTX 5080
-sdpa 输出: torch.Size([2, 16, 512, 128]) fp16
-余弦相似度 vs 标准 attention: 1.0000
-MSE: 0.000000
-速度: 0.52 ms/次 = 16.7 TFLOP/s (B=2,H=16,N=1024,D=128)
-```
+| 指标 | 结果 |
+|---|---|
+| 输出 shape/dtype | `[2,16,512,128]` fp16 ✅ |
+| 余弦相似度 vs 标准 attention | **1.0000** |
+| MSE | **0.000000** |
+| 速度 | **0.52 ms/次**（B=2,H=16,N=1024,D=128）|
+| 算力 | **16.7 TFLOP/s** |
 
 ## 已知限制
 
 - 仅支持 **sm120（RTX 50 系）**；RTX 40 系（sm89）不支持
 - `ComfyUI/requirements.txt` 缺失会导致 `/system_stats` 返回 500（MiniMax 打包环境固有，不影响节点与工作流执行）
 - 完整生成测试请自行在 ComfyUI 中运行（需加载 MiniMax H3 模型）
+
+## 许可证
+
+Apache-2.0 — 继承自 [mengqin/SageAttention](https://github.com/mengqin/SageAttention)。见 `LICENSE`。
+
+## 免责声明
+
+本发布为社区预编译 wheel，仅供方便使用，非 NVIDIA / SageAttention 官方发布。风险自负；若自行构建，请对照 `patches/` 中的源码补丁进行验证。
 
 ## 致谢
 
